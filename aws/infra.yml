@@ -1,0 +1,103 @@
+# File: infra.yml
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Infraestrutura para Task Manager App (S3 + CloudFront + EC2 + Security Groups + Secrets Manager)
+
+Resources:
+
+  # 🔐 Security Group para EC2
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Acesso restrito ao backend
+      VpcId: vpc-xxxxxxxx
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5000
+          ToPort: 5000
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  # 🚀 EC2 Instance para Backend
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      KeyName: chave-ec2
+      ImageId: ami-xxxxxxxx # Amazon Linux 2 ou Ubuntu
+      Tags:
+        - Key: Name
+          Value: task-backend
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          yum install -y docker git
+          service docker start
+          usermod -a -G docker ec2-user
+          docker run -d -p 5000:5000 --env MONGO_URI=${MONGO_URI} --env JWT_SECRET=${JWT_SECRET} usuario/task-backend
+
+  # 🌐 S3 Bucket para Frontend
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: task-manager-frontend-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  # 🚀 CloudFront para Frontend
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt FrontendBucket.DomainName
+            Id: S3Origin
+            S3OriginConfig: {}
+        Enabled: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+
+  # 🔐 Secrets Manager - MongoDB URI
+  MongoDBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: mongo-uri
+      Description: MongoDB connection string
+      SecretString: '{"MONGO_URI":"mongodb+srv://usuario:senha@cluster.mongodb.net"}'
+
+  # 🔐 Secrets Manager - JWT Secret
+  JWTSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: jwt-secret
+      Description: JWT secret key
+      SecretString: '{"JWT_SECRET":"supersecretkey"}'
+
+Outputs:
+  FrontendURL:
+    Value: !Sub 'http://${CloudFrontDistribution.DomainName}'
+    Description: URL pública do frontend
+
+  EC2PublicIP:
+    Value: !GetAtt EC2Instance.PublicIp
+    Description: IP público da EC2 (Backend)
