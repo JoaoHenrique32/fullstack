@@ -25,11 +25,12 @@ const TaskList = styled.ul`
 const TaskItem = styled.li`
   padding: 0.75rem 1rem;
   margin-bottom: 0.5rem;
-  background:rgb(58, 58, 61);
+  background: rgb(58, 58, 61);
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-direction: column;
 `;
 
 const Button = styled.button`
@@ -39,6 +40,7 @@ const Button = styled.button`
   border-radius: 4px;
   padding: 6px 10px;
   cursor: pointer;
+  margin-top: 4px;
 `;
 
 const AddButton = styled.button`
@@ -48,6 +50,7 @@ const AddButton = styled.button`
   border-radius: 4px;
   padding: 8px 12px;
   cursor: pointer;
+  margin: 4px;
 `;
 
 export default function Dashboard() {
@@ -78,6 +81,11 @@ export default function Dashboard() {
     loadTasks();
   };
 
+  const handleUpdateStatus = async (id, newStatus) => {
+    await api.put(`/task/${id}`, { status: newStatus });
+    loadTasks();
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -105,6 +113,16 @@ export default function Dashboard() {
           <TaskItem key={t._id}>
             <div>
               <strong>{t.title}</strong> - {t.description}
+            </div>
+            <div>
+              <select
+                value={t.status}
+                onChange={(e) => handleUpdateStatus(t._id, e.target.value)}
+              >
+                <option value="pendente">Pendente</option>
+                <option value="em andamento">Em Andamento</option>
+                <option value="concluida">Concluída</option>
+              </select>
             </div>
             <Button onClick={() => handleDelete(t._id)}>Remover</Button>
           </TaskItem>

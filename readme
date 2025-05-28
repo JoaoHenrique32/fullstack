@@ -1,0 +1,76 @@
+este projeto tem como objetivo gerenciar tarefas, futuramente aprofundarei mais dentro dele, para deixar-lo
+mais aperfeiçoado. foi feito:
+
+ BACKEND: Node.js + Express + MongoDB (Atlas)
+ FRONTEND: React + Vite + Styled-components
+ Deploy possível em Render, AWS EC2, AWS S3 + CloudFront
+
+o projeto em si é acompanhado com uma estrutura de login, registro para ter o login e possui também um dashboard simples
+com um sistema de adicionar tarefas e excluir elas. 
+
+agora irei colocar as dependencias do backend:
+
+express — Servidor web
+
+mongoose — ODM para MongoDB
+
+cors — Liberação de acesso entre frontend e backend
+
+dotenv — Gerenciamento de variáveis de ambiente
+
+helmet — Segurança nos headers HTTP
+
+express-rate-limit — Limita quantidade de requisições (anti-DDoS)
+
+jsonwebtoken — Autenticação com JWT
+
+bcryptjs — Criptografia de senha
+
+
+Instalação do backend:
+
+cd backend (para poder entrar na pasta do backend)
+npm install (para instalar as dependencias do node)
+
+
+Rodar o backend: 
+
+npm start
+
+-----------------------------------------------------------------------------
+
+
+agora irei colocar as dependencias do Frontend:
+
+react — Biblioteca principal
+
+vite — Build rápido
+
+react-router-dom — Rotas SPA
+
+styled-components — CSS-in-JS para estilização
+
+axios — Requisições HTTP para API
+
+
+Instalação do frontend:
+
+cd frontend
+npm install
+
+
+Rodar frontend:
+
+npm run dev 
+
+------------------------------------------------------------------------------
+
+os deploys: 
+
+BACKEND:
+
+Render (Web Service) ou AWS EC2
+
+FRONTEND:
+
+Render (Static Site) ou AWS S3 + CloudFront
