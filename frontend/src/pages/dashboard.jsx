@@ -5,12 +5,16 @@ import api from '../services/api';
 import { logout } from '../services/auth';
 
 const Container = styled.div`
-  max-width: 800px;
-  margin: 50px auto;
-  padding: 2rem;
-  background: #ffffff;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 3rem;
+  background: rgb(0, 0, 0);
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const TaskList = styled.ul`
@@ -21,7 +25,7 @@ const TaskList = styled.ul`
 const TaskItem = styled.li`
   padding: 0.75rem 1rem;
   margin-bottom: 0.5rem;
-  background: #f4f4f5;
+  background:rgb(58, 58, 61);
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
@@ -53,7 +57,7 @@ export default function Dashboard() {
   const [description, setDescription] = useState('');
 
   const loadTasks = async () => {
-    const res = await api.get('/tasks');
+    const res = await api.get('/task');
     setTasks(res.data);
   };
 
@@ -63,14 +67,14 @@ export default function Dashboard() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    await api.post('/tasks', { title, description });
+    await api.post('/task', { title, description });
     setTitle('');
     setDescription('');
     loadTasks();
   };
 
   const handleDelete = async (id) => {
-    await api.delete(`/tasks/${id}`);
+    await api.delete(`/task/${id}`);
     loadTasks();
   };
 
