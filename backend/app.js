@@ -21,11 +21,14 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use('/api/auth', authRoutes);
-app.use('/api/tasks', taskRoutes);
+app.use('/api/task', taskRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB conectado'))
   .catch(err => console.error(err));
 
 const PORT = process.env.PORT || 5000;
+app.get('/', (req, res) => {
+  res.send('API online 🎯');
+});
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
