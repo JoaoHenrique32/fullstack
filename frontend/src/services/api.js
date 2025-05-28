@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getToken } from './auth';
 
 const api = axios.create({
-  baseURL: 'http://15.228.74.234:5000/api',
+  baseURL: 'https://task-manager-backend-caqt.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {
